@@ -7,11 +7,7 @@ import {
   faBell,
   faHistory,
   faCog,
-  faArrowUp,
-  faDownload,
-  faExpand,
 } from "@fortawesome/free-solid-svg-icons";
-import { Line, Doughnut } from "react-chartjs-2";
 export const Sidebar = () => {
   return (
     <>

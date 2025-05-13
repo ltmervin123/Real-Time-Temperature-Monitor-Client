@@ -1,15 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faThermometerHalf,
-  faTachometerAlt,
-  faChartLine,
-  faBell,
-  faHistory,
-  faCog,
-  faArrowUp,
-  faDownload,
-  faExpand,
-} from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 import { Line, Doughnut } from "react-chartjs-2";
 
 import {
@@ -38,6 +27,8 @@ ChartJS.register(
   Filler,
 );
 export const Chart = () => {
+  const option = ["Day", "Week", "Month"];
+  const [toggleDate, setToggleDate] = useState(option[0]);
   const tempChartData = {
     labels: ["12 AM", "3 AM", "6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"],
     datasets: [
@@ -113,6 +104,11 @@ export const Chart = () => {
       },
     },
   };
+
+  const getToggleStyle = () => {
+    return "bg-primary border-primary rounded text-white";
+  };
+
   return (
     <>
       {/* Charts */}
@@ -123,12 +119,32 @@ export const Chart = () => {
               Temperature Trends
             </h2>
             <div>
-              <button className="ml-2 text-gray-500 hover:text-primary">
-                <FontAwesomeIcon icon={faDownload} />
-              </button>
-              <button className="ml-2 text-gray-500 hover:text-primary">
-                <FontAwesomeIcon icon={faExpand} />
-              </button>
+              <div className="flex gap-2 ">
+                <button
+                  className={`px-3 py-2 border border-gray-300 rounded text-sm text-dark ${
+                    toggleDate === "Day" ? getToggleStyle() : ""
+                  }`}
+                  onClick={() => setToggleDate(option[0])}
+                >
+                  Day
+                </button>
+                <button
+                  className={`px-3 py-2 border border-gray-300 rounded text-sm text-dark ${
+                    toggleDate === "Week" ? getToggleStyle() : ""
+                  }`}
+                  onClick={() => setToggleDate(option[1])}
+                >
+                  Week
+                </button>
+                <button
+                  className={`px-3 py-2 border border-gray-300 rounded text-sm text-dark ${
+                    toggleDate === "Month" ? getToggleStyle() : ""
+                  }`}
+                  onClick={() => setToggleDate(option[2])}
+                >
+                  Month
+                </button>
+              </div>
             </div>
           </div>
           <div className="h-64">
@@ -139,11 +155,6 @@ export const Chart = () => {
         <div className="bg-white p-5 rounded-lg shadow-custom">
           <div className="flex justify-between items-center mb-5">
             <h2 className="text-lg font-semibold text-dark">Distribution</h2>
-            <div>
-              <button className="ml-2 text-gray-500 hover:text-primary">
-                <FontAwesomeIcon icon={faDownload} />
-              </button>
-            </div>
           </div>
           <div className="h-64">
             <Doughnut data={distChartData} options={distChartOptions} />
