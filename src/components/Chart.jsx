@@ -27,8 +27,6 @@ ChartJS.register(
   Filler,
 );
 export const Chart = () => {
-  const option = ["Day", "Week", "Month"];
-  const [toggleDate, setToggleDate] = useState(option[0]);
   const tempChartData = {
     labels: ["12 AM", "3 AM", "6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"],
     datasets: [
@@ -118,34 +116,6 @@ export const Chart = () => {
             <h2 className="text-lg font-semibold text-dark">
               Temperature Trends
             </h2>
-            <div>
-              <div className="flex gap-2 ">
-                <button
-                  className={`px-3 py-2 border border-gray-300 rounded text-sm text-dark ${
-                    toggleDate === "Day" ? getToggleStyle() : ""
-                  }`}
-                  onClick={() => setToggleDate(option[0])}
-                >
-                  Day
-                </button>
-                <button
-                  className={`px-3 py-2 border border-gray-300 rounded text-sm text-dark ${
-                    toggleDate === "Week" ? getToggleStyle() : ""
-                  }`}
-                  onClick={() => setToggleDate(option[1])}
-                >
-                  Week
-                </button>
-                <button
-                  className={`px-3 py-2 border border-gray-300 rounded text-sm text-dark ${
-                    toggleDate === "Month" ? getToggleStyle() : ""
-                  }`}
-                  onClick={() => setToggleDate(option[2])}
-                >
-                  Month
-                </button>
-              </div>
-            </div>
           </div>
           <div className="h-64">
             <Line data={tempChartData} options={tempChartOptions} />
