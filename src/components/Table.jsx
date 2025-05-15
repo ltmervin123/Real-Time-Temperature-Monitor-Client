@@ -1,67 +1,44 @@
-export const Table = () => {
-  // Activity data
-  const activities = [
-    {
-      time: "Today, 3:45 PM",
-      temp: "26.5°C",
-      status: "warning",
-      duration: "Ongoing",
-    },
-    {
-      time: "Today, 2:30 PM",
-      temp: "28.7°C",
-      status: "alert",
-      duration: "45 min",
-    },
-    {
-      time: "Today, 11:20 AM",
-      temp: "24.1°C",
-      status: "normal",
-      duration: "2h 15m",
-    },
-    {
-      time: "Today, 8:15 AM",
-      temp: "22.8°C",
-      status: "normal",
-      duration: "3h 05m",
-    },
-    {
-      time: "Today, 5:23 AM",
-      temp: "21.3°C",
-      status: "normal",
-      duration: "2h 52m",
-    },
-    {
-      time: "Today, 3:45 PM",
-      temp: "26.5°C",
-      status: "warning",
-      duration: "Ongoing",
-    },
-    {
-      time: "Today, 2:30 PM",
-      temp: "28.7°C",
-      status: "alert",
-      duration: "45 min",
-    },
-    {
-      time: "Today, 11:20 AM",
-      temp: "24.1°C",
-      status: "normal",
-      duration: "2h 15m",
-    },
-    {
-      time: "Today, 8:15 AM",
-      temp: "22.8°C",
-      status: "normal",
-      duration: "3h 05m",
-    },
-    {
-      time: "Today, 5:23 AM",
-      temp: "21.3°C",
-      status: "normal",
-      duration: "2h 52m",
-    },
-  ];
+import { useState, useEffect, useCallback } from "react";
+
+export const Table = ({ temperature }) => {
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    if (temperature === 0) {
+      return;
+    }
+
+    setActivities((prev) => [
+      ...prev,
+      {
+        time: getDates(),
+        status: getStatus(),
+        temp: temperature,
+      },
+    ]);
+  }, [temperature]);
+
+  const getDates = useCallback(() => {
+    const date = new Date();
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+
+    return `Today, ${time}`;
+  }, []);
+
+  const getStatus = useCallback(() => {
+    if (temperature <= 25) {
+      return "Normal";
+    } else if (temperature > 25 && temperature <= 28) {
+      return "Warning";
+    } else {
+      return "Alert";
+    }
+  }, [temperature]);
+
   return (
     <>
       {/* Activity Table */}
@@ -80,43 +57,47 @@ export const Table = () => {
                 <th className="pb-3 text-gray-500 font-medium text-sm">
                   Status
                 </th>
-                <th className="pb-3 text-gray-500 font-medium text-sm">
-                  Duration
-                </th>
               </tr>
             </thead>
             <tbody>
-              {activities.map((activity, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-gray-100 last:border-0"
-                >
-                  <td className="py-3 text-gray-500 text-sm">
-                    {activity.time}
-                  </td>
-                  <td className="py-3 text-gray-500 text-sm">
-                    {activity.temp}
-                  </td>
-                  <td className="py-3">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium
+              {activities.length > 0 ? (
+                activities
+                  .slice()
+                  .reverse()
+                  .map((activity, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-gray-100 last:border-0"
+                    >
+                      <td className="py-3 text-gray-500 text-sm">
+                        {activity.time}
+                      </td>
+                      <td className="py-3 text-gray-500 text-sm">
+                        {activity.temp}
+                      </td>
+                      <td className="py-3">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium
                           ${
-                            activity.status === "normal"
+                            activity.status === "Normal"
                               ? "bg-green-50 text-secondary"
-                              : activity.status === "warning"
+                              : activity.status === "Warning"
                               ? "bg-yellow-50 text-warning"
                               : "bg-red-50 text-danger"
                           }`}
-                    >
-                      {activity.status.charAt(0).toUpperCase() +
-                        activity.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="py-3 text-gray-500 text-sm">
-                    {activity.duration}
+                        >
+                          {activity.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="py-3 text-center text-gray-500">
+                    No data available
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
