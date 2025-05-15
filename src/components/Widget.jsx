@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 export const Widget = ({ temperature }) => {
-  const counter = useRef(0);
-  const totalTemp = useRef(0);
+  const [totalTemp, setTotalTemp] = useState([]);
   const [maxTemp, setMaxTemp] = useState(0.0);
   const [minTemp, setMinTemp] = useState(0.0);
   const [aveTemp, setAveTemp] = useState(0.0);
@@ -34,24 +33,23 @@ export const Widget = ({ temperature }) => {
     });
   }, [temperature]);
 
-  // SET COUNTER
-  useEffect(() => {
-    counter.current++;
-  }, [temperature]);
-
   // CALCULATE AVERAGE
   useEffect(() => {
     if (aveTemp === 0.0) {
       setAveTemp(temperature);
       return;
     }
-    const average = totalTemp.current / counter.current;
+    const total = totalTemp.reduce((acc, num) => acc + num, 0);
+    const numberOfTemp = totalTemp.length;
+    const average = (total / numberOfTemp).toFixed(1);
     setAveTemp(average);
   }, [temperature]);
 
   // ADD UP TEMP
   useEffect(() => {
-    totalTemp.current += temperature;
+    if (temperature === 0) return;
+
+    setTotalTemp((prev) => [...prev, Number(temperature)]);
   }, [temperature]);
 
   return (

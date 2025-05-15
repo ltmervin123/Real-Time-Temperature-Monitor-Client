@@ -16,7 +16,7 @@ const socket = io("http://localhost:5000", {
 });
 
 function App() {
-  const [temperature, setTemperature] = useState(0.0);
+  const [temperature, setTemperature] = useState(0);
 
   useEffect(() => {
     socket.on("temperature", (data) => {
