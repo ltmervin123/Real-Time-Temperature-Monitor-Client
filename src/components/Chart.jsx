@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Line, Doughnut } from "react-chartjs-2";
 
 import {
@@ -26,86 +26,121 @@ ChartJS.register(
   Legend,
   Filler,
 );
-export const Chart = () => {
-  const tempChartData = {
-    labels: ["12 AM", "3 AM", "6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"],
-    datasets: [
-      {
-        label: "Temperature (°C)",
-        data: [22.5, 21.8, 21.3, 23.2, 25.7, 28.7, 26.5, 25.1],
-        backgroundColor: "rgba(52, 152, 219, 0.1)",
-        borderColor: "rgba(52, 152, 219, 1)",
-        borderWidth: 2,
-        pointBackgroundColor: "rgba(52, 152, 219, 1)",
-        pointRadius: 4,
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
+export const Chart = ({ temperature }) => {
+  const [temperatureData, setTemperatureData] = useState({
+    data: [],
+    timeStamp: [],
+  });
 
-  const tempChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: false,
-        min: 20,
-        max: 30,
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
+  useEffect(() => {
+    setTemperatureData((prevData) => {
+      return {
+        ...prevData,
+        data: [...prevData.data, Number(temperature)],
+        timeStamp: [...prevData.timeStamp, getHours()],
+      };
+    });
+  }, [temperature]);
+
+  const tempChartData = useMemo(() => {
+    return {
+      labels: temperatureData.timeStamp,
+      datasets: [
+        {
+          label: "Temperature (°C)",
+          data: temperatureData.data,
+          backgroundColor: "rgba(52, 152, 219, 0.1)",
+          borderColor: "rgba(52, 152, 219, 1)",
+          borderWidth: 2,
+          pointBackgroundColor: "rgba(52, 152, 219, 1)",
+          pointRadius: 4,
+          tension: 0.4,
+          fill: true,
         },
-      },
-      x: {
-        grid: {
+      ],
+    };
+  }, [temperature]);
+
+  const tempChartOptions = useMemo(() => {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
           display: false,
         },
       },
-    },
-  };
-
-  const distChartData = {
-    labels: ["Normal (20-25°C)", "Warning (25-28°C)", "Alert (>28°C)"],
-    datasets: [
-      {
-        data: [65, 25, 10],
-        backgroundColor: [
-          "rgba(46, 204, 113, 0.7)",
-          "rgba(243, 156, 18, 0.7)",
-          "rgba(231, 76, 60, 0.7)",
-        ],
-        borderColor: [
-          "rgba(46, 204, 113, 1)",
-          "rgba(243, 156, 18, 1)",
-          "rgba(231, 76, 60, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const distChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          boxWidth: 12,
-          padding: 15,
+      scales: {
+        y: {
+          beginAtZero: false,
+          min: 1,
+          max: 50,
+          position: "left",
+          grid: {
+            color: "rgba(0, 0, 0, 0.05)",
+          },
+        },
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            display: false,
+          },
         },
       },
-    },
-  };
+    };
+  }, []);
 
-  const getToggleStyle = () => {
-    return "bg-primary border-primary rounded text-white";
-  };
+  const distChartData = useMemo(() => {
+    return {
+      labels: ["Normal (20-25°C)", "Warning (25-28°C)", "Alert (>28°C)"],
+      datasets: [
+        {
+          data: [33, 33, 33],
+          backgroundColor: [
+            "rgba(46, 204, 113, 0.7)",
+            "rgba(243, 156, 18, 0.7)",
+            "rgba(231, 76, 60, 0.7)",
+          ],
+          borderColor: [
+            "rgba(46, 204, 113, 1)",
+            "rgba(243, 156, 18, 1)",
+            "rgba(231, 76, 60, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+  }, []);
+
+  const distChartOptions = useMemo(() => {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+            padding: 15,
+          },
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+    };
+  }, []);
+
+  const getHours = useCallback(() => {
+    const date = new Date();
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+  }, []);
 
   return (
     <>
@@ -117,14 +152,18 @@ export const Chart = () => {
               Temperature Trends
             </h2>
           </div>
-          <div className="h-64">
-            <Line data={tempChartData} options={tempChartOptions} />
+
+          <div className="overflow-x-auto">
+            <div className="min-w-[800px] h-64">
+              {" "}
+              <Line data={tempChartData} options={tempChartOptions} />
+            </div>
           </div>
         </div>
 
         <div className="bg-white p-5 rounded-lg shadow-custom">
           <div className="flex justify-between items-center mb-5">
-            <h2 className="text-lg font-semibold text-dark">Distribution</h2>
+            <h2 className="text-lg font-semibold text-dark">Legend</h2>
           </div>
           <div className="h-64">
             <Doughnut data={distChartData} options={distChartOptions} />

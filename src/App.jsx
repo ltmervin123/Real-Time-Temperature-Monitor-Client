@@ -32,7 +32,7 @@ function App() {
       <div>
         <Header />
         <Widget temperature={temperature} />
-        <Chart />
+        <Chart temperature={temperature} />
         <Table />
       </div>
     </div>
